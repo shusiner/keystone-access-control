@@ -1,4 +1,4 @@
-# Keystone Project Starter
+# Cannot bypass field access read control demo
 
 Welcome to Keystone!
 
@@ -7,6 +7,10 @@ Run
 ```
 yarn dev
 ```
+
+use graphql playground to query q1 in the test1.graphql, you can see in the console log, Coming here even using sudo in extended graphql schema and the main changes are in keystone.ts and schema.ts. you can also see the changes in commit 009b7199d857fe05ffde6e2bb0ddfe28e6d30443
+
+## Orignal info
 
 To view the config for your new app, look at [./keystone.ts](./keystone.ts)
 
