@@ -1,0 +1,5 @@
+query q1($token: String) {
+  q1(token: $token) {
+    name
+  }
+}

@@ -35,6 +35,12 @@ var lists = {
     access: import_access.allowAll,
     fields: {
       name: (0, import_fields.text)({
+        access: {
+          read: (args) => {
+            console.log("Coming here even using sudo");
+            return true;
+          }
+        },
         validation: { isRequired: true }
       }),
       email: (0, import_fields.text)({
@@ -125,6 +131,8 @@ var session = (0, import_session.statelessSessions)({
 });
 
 // keystone.ts
+var import_schema2 = require("@graphql-tools/schema");
+var graphql = String.raw;
 var keystone_default = withAuth(
   (0, import_core2.config)({
     db: {
@@ -132,7 +140,23 @@ var keystone_default = withAuth(
       url: "file:./keystone.db"
     },
     lists,
-    session
+    session,
+    extendGraphqlSchema: (schema) => (0, import_schema2.mergeSchemas)({
+      schemas: [schema],
+      typeDefs: graphql`
+          type Query {
+            q1(token: String): [User]
+          }
+        `,
+      resolvers: {
+        Query: {
+          q1: async function q1(root, { token }, context) {
+            const users = await context.sudo().db.User.findMany({});
+            return users;
+          }
+        }
+      }
+    })
   })
 );
 // Annotate the CommonJS export names for ESM import in node:

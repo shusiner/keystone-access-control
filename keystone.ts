@@ -14,6 +14,14 @@ import { lists } from "./schema";
 // when you write your list-level access control functions, as they typically rely on session data
 import { withAuth, session } from "./auth";
 
+import { mergeSchemas } from "@graphql-tools/schema";
+import { GraphQLSchema } from "graphql";
+import { KeystoneContext } from "@keystone-6/core/types";
+const graphql = String.raw;
+interface Arguments {
+  token: string;
+}
+
 export default withAuth(
   config({
     db: {
@@ -25,5 +33,28 @@ export default withAuth(
     },
     lists,
     session,
+    extendGraphqlSchema: (schema: GraphQLSchema) =>
+      mergeSchemas({
+        schemas: [schema],
+        typeDefs: graphql`
+          type Query {
+            q1(token: String): [User]
+          }
+        `,
+        resolvers: {
+          Query: {
+            q1: async function q1(
+              root: any,
+              { token }: Arguments,
+              context: KeystoneContext
+            ): Promise<any> {
+              // console.log(context.session);
+              const users = await context.sudo().db.User.findMany({});
+              // console.log(users);
+              return users;
+            },
+          },
+        },
+      }),
   })
 );
